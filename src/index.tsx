@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import './index.css';
 import store from 'store'
 import { BrowserRouter } from 'react-router-dom';
-import Routing from 'routes'
+import Template from 'components/Template';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -13,7 +13,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <Provider store={store}>
     <BrowserRouter>
-      <Routing />
+      <Template />
     </BrowserRouter>
   </Provider>
 );

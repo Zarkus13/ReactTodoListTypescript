@@ -1,9 +1,10 @@
-import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
+import React, { ChangeEvent, KeyboardEventHandler, useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { addTodoItem, fetchTasks } from 'reducers/todoListReducer'
-import { useAppDispatch, useAppSelector } from 'store'
+import { AppDispatch, useAppDispatch, useAppSelector } from 'store'
 import { SetState } from 'utils'
 import Loading from 'components/Loading'
+import { AddTodoItem, Title, TodoItem, TodoItemsList, TodoListWrapper } from './styles'
 
 const TodoList: React.FC = () => {
   const { list, fetchingList } = useAppSelector((state) => state.todoList);
@@ -19,41 +20,48 @@ const TodoList: React.FC = () => {
     inputRef?.current?.focus();
   }, []);
 
-  // const onAddItem = useCallback(() => {
-  //   dispatch(addTodoItem(itemToAdd));
-  //   setItemToAdd('');
-  // }, [itemToAdd]);
-
   return (
-    <>
-      <div>
+    <TodoListWrapper>
+      <Title>TodoList React</Title>
+
+      <AddTodoItem>
         <input
           type="text"
           value={itemToAdd}
           onChange={(event) => onItemToAddChange(event, setItemToAdd)}
+          onKeyPress={onItemToAddKeyPress(itemToAdd, setItemToAdd, dispatch)}
           ref={inputRef}
         />
 
-        {/*<button onClick={() => onAddItem()}>*/}
-        <button>
+        <button onClick={() => onAddItem(itemToAdd, setItemToAdd, dispatch)}>
           Add item
         </button>
-      </div>
+      </AddTodoItem>
 
       <Loading loading={fetchingList}>
-        <ul>
+        <TodoItemsList>
           {list.map((item, id) =>
-            <li key={id}>
+            <TodoItem key={id}>
               <Link to={`/item/${id}`}>{item}</Link>
-            </li>
+            </TodoItem>
           )}
-        </ul>
+        </TodoItemsList>
       </Loading>
-    </>
+    </TodoListWrapper>
   );
 };
 
 const onItemToAddChange = (event: ChangeEvent<HTMLInputElement>, setItemToAdd: SetState<string>) =>
   setItemToAdd(event.target.value);
+
+const onAddItem = (itemToAdd: string, setItemToAdd: SetState<string>, dispatch: AppDispatch) => {
+  dispatch(addTodoItem(itemToAdd));
+  setItemToAdd('');
+};
+
+const onItemToAddKeyPress = (itemToAdd: string, setItemToAdd: SetState<string>, dispatch: AppDispatch) => (event: React.KeyboardEvent<HTMLInputElement>) => {
+  if (event.key === 'Enter')
+    onAddItem(itemToAdd, setItemToAdd, dispatch);
+};
 
 export default TodoList;
